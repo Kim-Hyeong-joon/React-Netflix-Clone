@@ -49,5 +49,6 @@
   },
   "devDependencies": {
     "@types/react-router-dom": "^5.3.3"
-  }
+  },
+  "homepage": "https://Kim-Hyeong-joon.github.io/React-Netflix-Clone"
 }
