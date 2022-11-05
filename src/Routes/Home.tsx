@@ -164,11 +164,10 @@ function Home() {
   const [index, setIndex] = useState(0);
   const [leaving, setLeaving] = useState(false);
   const [windowInnerWidth, setWindowInnerWidth] = useState(0);
+  window.addEventListener("resize", () =>
+    setWindowInnerWidth(window.innerWidth)
+  );
   useEffect(() => {
-    console.log(window.innerWidth);
-    window.addEventListener("resize", () =>
-      setWindowInnerWidth(window.innerWidth)
-    );
     offset = windowInnerWidth > 755 ? 5 : 4;
   }, [windowInnerWidth]);
   const increaseIndex = () => {
