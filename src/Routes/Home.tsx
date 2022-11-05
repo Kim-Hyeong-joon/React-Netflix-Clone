@@ -1,5 +1,5 @@
 import { AnimatePresence, motion, useScroll } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { useHistory, useRouteMatch } from "react-router-dom";
 import styled from "styled-components";
@@ -47,7 +47,7 @@ const Slider = styled.div`
 const Row = styled(motion.div)`
   position: absolute;
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
   gap: 5px;
   width: 100%;
 `;
@@ -139,7 +139,7 @@ const infoVariants = {
   },
 };
 
-const offset = 6;
+let offset = window.innerWidth > 755 ? 5 : 4;
 
 const boxVariants = {
   normal: {
@@ -163,6 +163,14 @@ function Home() {
   );
   const [index, setIndex] = useState(0);
   const [leaving, setLeaving] = useState(false);
+  const [windowInnerWidth, setWindowInnerWidth] = useState(0);
+  useEffect(() => {
+    console.log(window.innerWidth);
+    window.addEventListener("resize", () =>
+      setWindowInnerWidth(window.innerWidth)
+    );
+    offset = windowInnerWidth > 755 ? 5 : 4;
+  }, [windowInnerWidth]);
   const increaseIndex = () => {
     if (data) {
       if (leaving) return;
@@ -198,8 +206,10 @@ function Home() {
             <Title>{data?.results[0].title}</Title>
             <Overview>{data?.results[0].overview}</Overview>
           </Banner>
+
           <Slider>
             <AnimatePresence initial={false} onExitComplete={toggleLeaving}>
+              <h1>Now Playing</h1>
               <Row
                 key={index}
                 variants={rowVariants}

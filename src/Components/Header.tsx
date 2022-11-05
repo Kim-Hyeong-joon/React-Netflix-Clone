@@ -159,7 +159,7 @@ function Header() {
         <Items>
           <Item>
             <Link to="/">
-              Home{" "}
+              Movies{" "}
               <AnimatePresence>
                 {homeMatch?.isExact && <Circle layoutId="circle" />}
               </AnimatePresence>
