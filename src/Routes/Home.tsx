@@ -3,7 +3,7 @@ import { useEffect, useLayoutEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { useHistory, useRouteMatch } from "react-router-dom";
 import styled from "styled-components";
-import { getMovies, IGetMoviesResult } from "../api";
+import { getMovies, getPopularMovies, IGetMoviesResult } from "../api";
 import { makeImagePath } from "../utils";
 
 const Wrapper = styled.div`
@@ -42,6 +42,9 @@ const Overview = styled.p`
 const Slider = styled.div`
   position: relative;
   top: -100px;
+  &:last-child {
+    top: 100px;
+  }
 `;
 
 const Row = styled(motion.div)`
@@ -161,6 +164,8 @@ function Home() {
     ["movies", "nowPlaying"],
     getMovies
   );
+  const { data: popularMoviesData, isLoading: popularLoading } =
+    useQuery<IGetMoviesResult>(["movies", "popular"], getPopularMovies);
   const [index, setIndex] = useState(0);
   const [leaving, setLeaving] = useState(false);
   const [windowInnerWidth, setWindowInnerWidth] = useState(0);
@@ -218,6 +223,39 @@ function Home() {
                 transition={{ type: "linear", duration: 1 }}
               >
                 {data?.results
+                  .slice(1)
+                  .slice(offset * index, offset * index + offset)
+                  .map((movie) => (
+                    <Box
+                      layoutId={movie.id + ""}
+                      variants={boxVariants}
+                      initial="normal"
+                      whileHover="hover"
+                      transition={{ type: "tween" }}
+                      onClick={() => onBoxClicked(movie.id)}
+                      key={movie.id}
+                      $bgPhoto={makeImagePath(movie.backdrop_path, "w500")}
+                    >
+                      <Info variants={infoVariants}>
+                        <h4>{movie.title}</h4>
+                      </Info>
+                    </Box>
+                  ))}
+              </Row>
+            </AnimatePresence>
+          </Slider>
+          <Slider>
+            <AnimatePresence initial={false} onExitComplete={toggleLeaving}>
+              <h1>Popular</h1>
+              <Row
+                key={index}
+                variants={rowVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                transition={{ type: "linear", duration: 1 }}
+              >
+                {popularMoviesData?.results
                   .slice(1)
                   .slice(offset * index, offset * index + offset)
                   .map((movie) => (

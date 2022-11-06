@@ -25,3 +25,9 @@ export function getMovies() {
     (response) => response.json()
   );
 }
+
+export function getPopularMovies() {
+  return fetch(`${BASE_PATH}/movie/popular?api_key=${API_KEY}`).then(
+    (response) => response.json()
+  );
+}
