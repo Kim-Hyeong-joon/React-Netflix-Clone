@@ -64,6 +64,7 @@ body {
   color:${(props) => props.theme.white.darker};
   line-height: 1.2;
   background-color: black;
+  width: 100vw;
 }
 a {
   text-decoration:none;

@@ -4,10 +4,13 @@ import { useQuery } from "react-query";
 import { useHistory, useRouteMatch } from "react-router-dom";
 import styled from "styled-components";
 import {
+  getMovieDetails,
   getMovies,
   getTopRatedMovies,
   getUpcomingMovies,
+  IGetDetailsResult,
   IGetMoviesResult,
+  IGenre,
 } from "../api";
 import { makeImagePath } from "../utils";
 
@@ -147,7 +150,7 @@ const infoVariants = {
   },
 };
 
-let offset = window.innerWidth > 755 ? 5 : 4;
+let offset = 5;
 
 const boxVariants = {
   normal: {
@@ -162,6 +165,7 @@ const boxVariants = {
 };
 
 function Home() {
+  const [movieDetails, setMovieDetails] = useState<any>({});
   const [movieLayoutId, setMovieLayoutId] = useState("now");
   const history = useHistory();
   const bigMovieMatch = useRouteMatch<{ movieId: string }>("/movies/:movieId");
@@ -175,16 +179,10 @@ function Home() {
     useQuery<IGetMoviesResult>(["movies", "topRated"], getTopRatedMovies);
   const { data: upcomingMoviesData, isLoading: upcomingLoading } =
     useQuery<IGetMoviesResult>(["movies", "upcoming"], getUpcomingMovies);
-  //
+  let movieDetail: any = {};
+
   const [index, setIndex] = useState(0);
   const [leaving, setLeaving] = useState(false);
-  const [windowInnerWidth, setWindowInnerWidth] = useState(0);
-  window.addEventListener("resize", () =>
-    setWindowInnerWidth(window.innerWidth)
-  );
-  useEffect(() => {
-    offset = windowInnerWidth > 755 ? 5 : 4;
-  }, [windowInnerWidth]);
   const increaseIndex = () => {
     if (data) {
       if (leaving) return;
@@ -195,8 +193,10 @@ function Home() {
     }
   };
   const toggleLeaving = () => setLeaving((prev) => !prev);
-  const onBoxClicked = (movieId: number, layoutId: string) => {
+  const onBoxClicked = async (movieId: number, layoutId: string) => {
     setMovieLayoutId(() => layoutId);
+    movieDetail = await getMovieDetails(movieId + "");
+    setMovieDetails(movieDetail);
     history.push(`/movies/${movieId}`);
   };
   const onOverlayClick = () => {
@@ -352,7 +352,27 @@ function Home() {
                         alt=""
                       />
                       <BigTitle>{clickedMovie.title}</BigTitle>
+                      <h2 style={{ fontSize: 26 }}>"{movieDetails.tagline}"</h2>
                       <BigOverview>{clickedMovie.overview}</BigOverview>
+                      <div
+                        style={{
+                          display: "flex",
+                          width: "100%",
+                          justifyContent: "space-between",
+                          marginTop: "10px",
+                        }}
+                      >
+                        <span>Release Date: {movieDetails.release_date}</span>
+                        <ul>
+                          <span>genre</span>
+                          {movieDetails.genres.map(
+                            (genre: any, index: number) => (
+                              <li key={index}>·{genre.name}</li>
+                            )
+                          )}
+                        </ul>
+                        <span>Runtime: {movieDetails.runtime} m</span>
+                      </div>
                     </>
                   )}
                 </BigMovie>
